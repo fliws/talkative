@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "talkative-harness"
+version = "0.1.0"
+description = "Discord multi-bot conversation harness for debugging and traffic generation"
+authors = [{ name = "Talkative", email = "devnull@example.com" }]
+readme = "README.md"
+requires-python = ">=3.13"
+keywords = ["discord", "openai", "asyncio", "bots", "prometheus", "logging"]
+license = { text = "MIT" }
+dependencies = [
+    "discord.py>=2.4.0",
+    "openai>=1.30.0",
+    "pydantic>=2.7.0",
+    "aiolimiter>=1.1.0",
+    "loguru>=0.7.2",
+    "prometheus_client>=0.20.0",
+    "uvicorn>=0.30.0",
+    "fastapi>=0.111.0",
+    "orjson>=3.10.0",
+    "python-dotenv>=1.0.1",
+    "tenacity>=8.3.0",
+]
+
+[project.scripts]
+talkative-harness = "talkative.run:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.2.0",
+    "pytest-asyncio>=0.23.0",
+    "ruff>=0.5.0",
+    "mypy>=1.10.0",
+    "types-requests",
+]
+
+[tool.ruff]
+line-length = 100
+
+[tool.pytest.ini_options]
+addopts = "-q"
+asyncio_mode = "auto"
+
+[tool.mypy]
+python_version = "3.13"
+ignore_missing_imports = true
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

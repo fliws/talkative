@@ -1,0 +1,12 @@
+# Example config via env; mainly reference. Prefer env vars.
+openai:
+  model: gpt-4o-mini
+runtime:
+  topic: "Observability in microservices"
+  reply_delay: 3
+  message_cap_per_channel: 50
+  moderation_enabled: true
+  dry_run: false
+logging:
+  level: INFO
+  token_usage: true

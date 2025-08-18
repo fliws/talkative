@@ -1,0 +1,23 @@
+version: "3.9"
+services:
+  harness:
+    build:
+      context: ..
+      dockerfile: ops/Dockerfile
+    environment:
+      DISCORD_BOT_TOKENS: ${DISCORD_BOT_TOKENS}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      TOPIC: ${TOPIC:-Observability in microservices}
+      REPLY_DELAY: ${REPLY_DELAY:-3}
+      MESSAGE_CAP_PER_CHANNEL: ${MESSAGE_CAP_PER_CHANNEL:-30}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      MODERATION_ENABLED: ${MODERATION_ENABLED:-true}
+      DRY_RUN: ${DRY_RUN:-false}
+      METRICS_PORT: ${METRICS_PORT:-8000}
+      HEALTH_PORT: ${HEALTH_PORT:-8000}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
+      MAX_OUTPUT_TOKENS: ${MAX_OUTPUT_TOKENS:-200}
+      OPENAI_RPS: ${OPENAI_RPS:-3}
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
