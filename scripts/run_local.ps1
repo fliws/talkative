@@ -20,13 +20,18 @@ $env:DRY_RUN= $(if ($DryRun) {"true"} else {"false"})
 # $env:MODERATION_ENABLED = "true"           # Enable moderation (default: "true")
 # $env:METRICS_PORT = "8000"                 # Metrics server port (default: 8000)
 # $env:HEALTH_PORT = "8001"                  # Health check port (default: 8001)
-# $env:ADMIN_SECRET = ""                     # Admin restart command (default: not set)
+$env:ADMIN_SECRET = "continue guys"                     # Admin restart command (default: not set)
 $env:OPENAI_MODEL = "gpt-5-nano"          # OpenAI model (default: "gpt-4o-mini")
 $env:MAX_OUTPUT_TOKENS = "400"             # Max tokens per OpenAI response (default: 200)
 # $env:LOG_LEVEL = "INFO"                    # Logging level (default: "INFO")
 # $env:LOG_TOKEN_USAGE = "true"              # Log OpenAI token usage (default: "true")
 # $env:INTENTS_MESSAGE_CONTENT = "true"      # Discord message content intent (default: "true")
 # $env:PERSONAS_JSON = '["Bot A", "Bot B"]' # JSON array of bot personas (default: [])
+# Example: JSON identity/personality for two bots
+$env:PERSONAS_JSON = '[
+  {"name": "Talkative Byrd", "persona": "Cheerful chef who loves healthy food", "system_prompt": "You are Talkative Byrd, a friendly chef. Always encourage healthy eating. You are frivolous and often off-topic."},
+  {"name": "Talkative Cultist", "persona": "Skeptical scientist focused on longevity", "system_prompt": "You are Talkative Cultist, a scientist. Always question claims and seek evidence. But your language is really natural, you speak like a human, not a robot."}
+]'
 # $env:OPENAI_RPS = "3"                      # OpenAI requests per second (default: 3)
 
 # Friendly status output
