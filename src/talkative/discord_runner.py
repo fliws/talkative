@@ -73,9 +73,25 @@ class BotClient(discord.Client):
         ch_state = self.state.get_channel(guild.id, channel.id)
         guild_name = guild.name
         channel_name = channel.name
-        content = (
-            f"Kickoff: Let's discuss '{self.topic}'. I'll start—what's your take?"
-        )
+        # Prefer channel topic from Discord; fall back to global topic
+        channel_topic = None
+        try:
+            channel_topic = getattr(channel, "topic", None)
+        except Exception:
+            channel_topic = None
+        # Ask OpenAI to craft a channel-aware kickoff to avoid cross-channel dedupe
+        try:
+            async with self.limiter:
+                content = await self.oa.kickoff(
+                    guild_name=guild_name,
+                    channel_name=channel_name,
+                    channel_topic=channel_topic,
+                    global_topic=self.topic,
+                    persona=self.persona,
+                )
+        except Exception as e:
+            logger.warning(f"Kickoff generation failed, falling back: {e}")
+            content = f"Kicking off #{channel_name}: {(channel_topic or self.topic)} — thoughts?"
         # Moderation and dedupe
         if self.cfg.runtime.moderation_enabled and await self.oa.moderate(content):
             MESSAGES_BLOCKED.labels(guild=guild_name, channel=channel_name, bot=str(self.bot_index)).inc()
@@ -139,9 +155,17 @@ class BotClient(discord.Client):
         await asyncio.sleep(self.cfg.runtime.reply_delay)
 
         # Build prompt and maybe summarize
+        # Prefer channel-specific topic from Discord; use global topic as a soft hint only
+        channel_topic = None
+        try:
+            channel_topic = getattr(channel, "topic", None)
+        except Exception:
+            channel_topic = None
+        effective_topic = channel_topic or self.topic
         sys_prompt = (
             f"You are bot #{self.bot_index}. Persona: {self.persona}. "
-            f"Stay strictly on the shared topic: '{self.topic}'. Be concise."
+            f"Primary topic (must not drift): '{effective_topic}'. "
+            f"Global hint (optional): '{self.topic}'. Be concise and stay within the channel's scope."
         )
         # Summarize if history is near limit
         need_summary = False

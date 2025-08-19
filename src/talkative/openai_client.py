@@ -86,3 +86,47 @@ class OpenAIClient:
         }
         msgs = [sys, user] + history[-20:]
         return await self.chat(msgs, temperature=0.3)
+
+    async def kickoff(
+        self,
+        guild_name: str,
+        channel_name: str,
+        channel_topic: str | None,
+        global_topic: str,
+        persona: str | None = None,
+    ) -> str:
+        """Generate a short, engaging kickoff tailored to the channel.
+
+        The kickoff must explicitly reference the channel name and adhere to the channel topic.
+        The global topic is a soft hint; do not override the channel topic.
+        """
+        topic = (channel_topic or "").strip()
+        if not topic:
+            topic = global_topic
+        sys_parts = [
+            "You draft a single kickoff message to start a Discord conversation.",
+            "Constraints:",
+            "- Mention the channel by name (like #" + channel_name + ") naturally.",
+            "- Stay strictly on the channel topic; do not drift off-topic.",
+            "- Be welcoming and ask 1 specific, open question to invite replies.",
+            "- Be concise (<= 220 characters). No lists. No hashtags or emojis spam.",
+            "- Avoid sensitive or unsafe content.",
+        ]
+        if persona:
+            sys_parts.append(f"Use this speaking style/persona: {persona}.")
+        sys_msg = {"role": "system", "content": "\n".join(sys_parts)}
+
+        user_msg = {
+            "role": "user",
+            "content": (
+                f"Guild: {guild_name}\n"
+                f"Channel: #{channel_name}\n"
+                f"Channel topic: {topic}\n"
+                f"Global hint (optional): {global_topic}\n\n"
+                "Write the kickoff now."
+            ),
+        }
+        text = await self.chat([sys_msg, user_msg], temperature=0.6)
+        # Defensive trim and ensure non-empty
+        text = (text or "").strip()
+        return text[:500] if text else f"Kicking off #{channel_name}: {topic} — what do you think?"

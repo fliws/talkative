@@ -1,6 +1,6 @@
 # Example config via env; mainly reference. Prefer env vars.
 openai:
-  model: gpt-4o-mini
+  model: gpt-5-nano
 runtime:
   topic: "Observability in microservices"
   reply_delay: 3
